@@ -8,19 +8,24 @@ import {
   Delete,
   HttpException,
   HttpStatus,
-  Request
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { validate } from 'class-validator';
+import { Roles } from './guard/jwt-roles.guard';
+import { Public } from './guard/jwt-strategy';
+import { loginUserDto } from './dto/login-user.dto';
+import { Role } from './guard/enum/role.enum';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { AuthGuard } from './guard/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() createUserDto: CreateAuthDto) {
+  async register(@Body() createUserDto: CreateUserDto) {
     const errors = await validate(createUserDto);
     if (errors.length > 0) {
       throw new HttpException(
